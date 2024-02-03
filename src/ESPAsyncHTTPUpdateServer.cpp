@@ -66,7 +66,7 @@ namespace espasynchttpupdateserver
             response->addHeader("Access-Control-Allow-Headers", "*");
             response->addHeader("Access-Control-Allow-Origin", "*");
             request->send(response); 
-        }, [&](AsyncWebServerRequest *request){
+            
             _authenticated = (_username == emptyString || _password == emptyString || request -> authenticate(_username.c_str(), _password.c_str()));
             if (!_authenticated)
             {
@@ -96,7 +96,7 @@ namespace espasynchttpupdateserver
               request->client()->stop();
               ESP.restart();
             }
-        },[&](AsyncWebServerRequest *request)
+        },[&](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final)
         {
             // handler for the file upload, gets the sketch bytes, and writes
             // them through the Update object
