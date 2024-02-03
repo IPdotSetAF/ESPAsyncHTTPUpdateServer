@@ -66,7 +66,7 @@ namespace espasynchttpupdateserver
             response->addHeader("Access-Control-Allow-Headers", "*");
             response->addHeader("Access-Control-Allow-Origin", "*");
             request->send(response); 
-            
+        }, [&](AsyncWebServerRequest *request){
             _authenticated = (_username == emptyString || _password == emptyString || request -> authenticate(_username.c_str(), _password.c_str()));
             if (!_authenticated)
             {
@@ -90,10 +90,10 @@ namespace espasynchttpupdateserver
                 request->send(response); 
             } 
             else {
-              _server->client().setNoDelay(true);
+              request->client()->setNoDelay(true);
               request->send_P(200, PSTR("text/html"), successResponse);
               delay(100);
-              _server->client().stop();
+              request->client()->stop();
               ESP.restart();
             }
         },[&](AsyncWebServerRequest *request)
