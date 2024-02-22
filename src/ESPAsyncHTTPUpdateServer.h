@@ -3,51 +3,44 @@
 
 #include <ESPAsyncWebServer.h>
 
-namespace espasynchttpupdateserver
+class ESPAsyncHTTPUpdateServer
 {
+public:
+    ESPAsyncHTTPUpdateServer(bool serial_debug = false);
 
-    class ESPAsyncHTTPUpdateServer
+    void setup(AsyncWebServer *server)
     {
-    public:
-        ESPAsyncHTTPUpdateServer(bool serial_debug = false);
+        setup(server, emptyString, emptyString);
+    }
 
-        void setup(AsyncWebServer *server)
-        {
-            setup(server, emptyString, emptyString);
-        }
+    void setup(AsyncWebServer *server, const String &path)
+    {
+        setup(server, path, emptyString, emptyString);
+    }
 
-        void setup(AsyncWebServer *server, const String &path)
-        {
-            setup(server, path, emptyString, emptyString);
-        }
+    void setup(AsyncWebServer *server, const String &username, const String &password)
+    {
+        setup(server, "/update", username, password);
+    }
 
-        void setup(AsyncWebServer *server, const String &username, const String &password)
-        {
-            setup(server, "/update", username, password);
-        }
+    void setup(AsyncWebServer *server, const String &path, const String &username, const String &password);
 
-        void setup(AsyncWebServer *server, const String &path, const String &username, const String &password);
+    void updateCredentials(const String &username, const String &password)
+    {
+        _username = username;
+        _password = password;
+    }
 
-        void updateCredentials(const String &username, const String &password)
-        {
-            _username = username;
-            _password = password;
-        }
+protected:
+    void _setUpdaterError();
 
-    protected:
-        void _setUpdaterError();
-
-    private:
-        bool _serial_output;
-        AsyncWebServer *_server;
-        String _username;
-        String _password;
-        bool _authenticated;
-        String _updaterError;
-    };
-
+private:
+    bool _serial_output;
+    AsyncWebServer *_server;
+    String _username;
+    String _password;
+    bool _authenticated;
+    String _updaterError;
 };
-
-#include "ESPAsyncHTTPUpdateServer.cpp"
 
 #endif
