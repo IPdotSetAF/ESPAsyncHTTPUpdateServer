@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <ESPAsyncWebServer.h>
 #include <flash_hal.h>
 #include <FS.h>
 #include "StreamString.h"
@@ -28,9 +27,8 @@ static const char serverIndex[] PROGMEM =
 static const char successResponse[] PROGMEM =
     "<META http-equiv=\"refresh\" content=\"15;URL=/\">Update Success! Rebooting...";
 
-ESPAsyncHTTPUpdateServer::ESPAsyncHTTPUpdateServer(bool serial_debug)
+ESPAsyncHTTPUpdateServer::ESPAsyncHTTPUpdateServer()
 {
-    _serial_output = serial_debug;
     _server = NULL;
     _username = emptyString;
     _password = emptyString;
@@ -49,7 +47,8 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
             if(_username != emptyString && _password != emptyString)
                 if( !request->authenticate(_username.c_str(), _password.c_str()))
                     return request->requestAuthentication();
-            request->send_P(200, PSTR("text/html"), serverIndex); });
+
+            request->send_P(200, "text/html", serverIndex); });
 
     // handler for the /update form page - preflight options
     _server->on(path.c_str(), HTTP_OPTIONS, [&](AsyncWebServerRequest *request)
@@ -62,8 +61,9 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
             _authenticated = (_username == emptyString || _password == emptyString || request -> authenticate(_username.c_str(), _password.c_str()));
             if (!_authenticated)
             {
-                if (_serial_output)
-                    Serial.printf("Unauthenticated Update\n");
+#ifdef DEBUG
+                Serial.printf("Unauthenticated Update\n");
+#endif
                 return;
             } });
 
@@ -71,107 +71,103 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
     _server->on(
         path.c_str(), HTTP_POST, [&](AsyncWebServerRequest *request)
         {
-            AsyncWebServerResponse* response = request->beginResponse(200,F("text/html"), String(F("Update error: ")) + _updaterError);
-            response->addHeader("Access-Control-Allow-Headers", "*");
-            response->addHeader("Access-Control-Allow-Origin", "*");
-            
-
+            //if requestAuthentication() is false second handler will run, else it wont.
             if(!_authenticated)
-                //if requestAuthentication() is false second handler will run, else it wont.
                 return request->requestAuthentication();
+
             if (Update.hasError()) {
+                AsyncWebServerResponse* response = request->beginResponse(200,F("text/html"), String(F("Update error: ")) + _updaterError);
+                response->addHeader("Access-Control-Allow-Headers", "*");
+                response->addHeader("Access-Control-Allow-Origin", "*");
+                response->addHeader("Connection", "close");
                 request->send(response); 
             } 
             else {
-              request->client()->setNoDelay(true);
-              request->send_P(200, PSTR("text/html"), successResponse);
-              delay(100);
-              request->client()->stop();
-              //ESP.restart();
+                request->send_P(200, PSTR("text/html"), successResponse);
+                delay(1000);
+                ESP.restart();
             } },
         [&](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final)
         {
             // handler for the file upload, gets the sketch bytes, and writes
             // them through the Update object
-            
-            //Serial.println(filename);
-            
-            if (request->hasParam("name"))
-                Serial.println("has name " + request->getParam("name")->value());
 
-            // String inputName = request->getParam("file")->name();
-            // Serial.println("input type : " + (String)inputName);
+            String inputName = request->getParam("name")->value();
 
-            // if (upload.status == UPLOAD_FILE_START)
-            // {
-            //     _updaterError.clear();
-            //     if (_serial_output)
-            //         Serial.setDebugOutput(true);
-            //     _authenticated = (_username == emptyString || _password == emptyString || request->authenticate(_username.c_str(), _password.c_str()));
-            //     if (!_authenticated)
-            //     {
-            //         if (_serial_output)
-            //             Serial.printf("Unauthenticated Update\n");
-            //         return;
-            //     }
-            //     if (_serial_output)
-            //         Serial.printf("Update: %s\n", filename.c_str());
-            //     if (inputName == "filesystem")
-            //     {
-            //         size_t fsSize = ((size_t)FS_end - (size_t)FS_start);
-            //         close_all_fs();
-            //         if (!Update.begin(fsSize, U_FS))
-            //         { // start with max available size
-            //             if (_serial_output)
-            //                 Update.printError(Serial);
-            //         }
-            //     }
-            //     else
-            //     {
-            //         uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
-            //         if (!Update.begin(maxSketchSpace, U_FLASH))
-            //         { // start with max available size
-            //             _setUpdaterError();
-            //         }
-            //     }
-            // }
-            // else if (_authenticated && upload.status == UPLOAD_FILE_WRITE && !_updaterError.length())
-            // {
-            //     if (_serial_output)
-            //         Serial.printf(".");
-            //     if (Update.write(upload.buf, upload.currentSize) != upload.currentSize)
-            //     {
-            //         _setUpdaterError();
-            //     }
-            // }
-            // else if (_authenticated && upload.status == UPLOAD_FILE_END && !_updaterError.length())
-            // {
-            //     if (Update.end(true))
-            //     { // true to set the size to the current progress
-            //         if (_serial_output)
-            //             Serial.printf("Update Success: %zu\nRebooting...\n", upload.totalSize);
-            //     }
-            //     else
-            //     {
-            //         _setUpdaterError();
-            //     }
-            //     if (_serial_output)
-            //         Serial.setDebugOutput(false);
-            // }
-            // else if (_authenticated && upload.status == UPLOAD_FILE_ABORTED)
-            // {
-            //     Update.end();
-            //     if (_serial_output)
-            //         Serial.println("Update was aborted");
-            // }
-            // esp_yield();
+            if (!index)
+            {
+                _updaterError.clear();
+#ifdef DEBUG
+                Serial.setDebugOutput(true);
+#endif
+                _authenticated = (_username == emptyString || _password == emptyString || request->authenticate(_username.c_str(), _password.c_str()));
+                if (!_authenticated)
+                {
+#ifdef DEBUG
+                    Serial.printf("Unauthenticated Update\n");
+#endif
+                    return;
+                }
+#ifdef DEBUG
+                Serial.printf("Update: %s\n", filename.c_str());
+#endif
+                Update.runAsync(true);
+                if (inputName == "filesystem")
+                {
+                    Serial.println("updating filesystem");
+                    size_t fsSize = ((size_t)FS_end - (size_t)FS_start);
+                    close_all_fs();
+                    if (!Update.begin(fsSize, U_FS))
+                    { // start with max available size
+#ifdef DEBUG
+                        Update.printError(Serial);
+#endif
+                    }
+                }
+                else
+                {
+                    Serial.println("updating flash");
+                    uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
+                    if (!Update.begin(maxSketchSpace, U_FLASH))
+                    { // start with max available size
+                        _setUpdaterError();
+                    }
+                }
+            }
+
+            if (_authenticated && len && !_updaterError.length())
+            {
+#ifdef DEBUG
+                Serial.printf(".");
+#endif
+                if (Update.write(data, len) != len)
+                    _setUpdaterError();
+            }
+
+            if (_authenticated && final && !_updaterError.length())
+            {
+                if (Update.end(true))
+                { // true to set the size to the current progress
+#ifdef DEBUG
+                    Serial.println("Update Success: \nRebooting...\n");
+#endif
+                }
+                else
+                    _setUpdaterError();
+#ifdef DEBUG
+                Serial.setDebugOutput(false);
+#endif
+            }
+            else
+                return;
         });
 }
 
 void ESPAsyncHTTPUpdateServer::_setUpdaterError()
 {
-    if (_serial_output)
-        Update.printError(Serial);
+#ifdef DEBUG
+    Update.printError(Serial);
+#endif
     StreamString str;
     Update.printError(str);
     _updaterError = str.c_str();

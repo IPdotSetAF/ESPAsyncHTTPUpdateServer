@@ -3,10 +3,12 @@
 
 #include <ESPAsyncWebServer.h>
 
+//#define DEBUG
+
 class ESPAsyncHTTPUpdateServer
 {
 public:
-    ESPAsyncHTTPUpdateServer(bool serial_debug = false);
+    ESPAsyncHTTPUpdateServer();
 
     void setup(AsyncWebServer *server)
     {
@@ -35,7 +37,6 @@ protected:
     void _setUpdaterError();
 
 private:
-    bool _serial_output;
     AsyncWebServer *_server;
     String _username;
     String _password;
