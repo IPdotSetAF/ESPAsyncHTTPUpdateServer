@@ -114,7 +114,9 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
                 Update.runAsync(true);
                 if (inputName == "filesystem")
                 {
+#ifdef DEBUG
                     Serial.println("updating filesystem");
+#endif
                     size_t fsSize = ((size_t)FS_end - (size_t)FS_start);
                     close_all_fs();
                     if (!Update.begin(fsSize, U_FS))
@@ -126,7 +128,9 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
                 }
                 else
                 {
+#ifdef DEBUG
                     Serial.println("updating flash");
+#endif
                     uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
                     if (!Update.begin(maxSketchSpace, U_FLASH))
                     { // start with max available size
