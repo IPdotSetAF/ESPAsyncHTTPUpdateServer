@@ -12,6 +12,8 @@
 #elif defined(ESP8266)
     #include <flash_hal.h>
     #include <FS.h>
+#else
+  #error "This library only supports boards with an ESP8266 or ESP32 processor."
 #endif
 
 static const char serverIndex[] PROGMEM =

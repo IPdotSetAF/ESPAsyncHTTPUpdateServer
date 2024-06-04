@@ -1,6 +1,6 @@
 {
     "name": "ESPAsyncHTTPUpdateServer",
-    "version": "2.0.0",
+    "version": "1.0.0",
     "description": "Simple HTTP Update server based on the ESP8266WebServer modifed for ESPAsyncWebServer(by me-no-dev).",
     "keywords": "ESP, Async, OTA, WebServer, HTTP, Update",
     "repository":
@@ -13,12 +13,12 @@
       {
         "name": "Mohammad Mahdi Nazari",
         "email": "IPdotSetAF@gmail.com",
-        "url": "https://www.ip-af.ir/contact",
+        "url": "https://github.com/IPdotSetAF",
         "maintainer": true
       }
     ],
     "license": "LGPL-V2.1",
-    "homepage": "https://www.ip-af.ir/Projects/Electronics/ESPAsyncHTTPUpdateServer",
+    "homepage": "https://github.com/IPdotSetAF/ESPAsyncHTTPUpdateServer",
     "dependencies": [
       {"me-no-dev/ESP Async WebServer": "*"}
       ,
