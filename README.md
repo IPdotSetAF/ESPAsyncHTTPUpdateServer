@@ -23,27 +23,31 @@ It will provide a simple webpage for updating the firmware or filesystem of `ESP
 
 ### Setup
 1. Include the library after `ESPAsyncWebServer.h`
-```
+``` C++
 #include <ESPAsyncWebServer.h>
 #include <ESPAsyncHTTPUpdateServer.h>
 ```
 2. Create an object from `ESPAsyncHTTPUpdateServer`
-```
+``` C++
 ESPAsyncHTTPUpdateServer _updateServer;
 AsyncWebServer _server(80);
 ```
 3. Setup the update server before starting the webServer
-```
+``` C++
 _updateServer.setup(&_server);
 _server.begin();
 ``` 
 #### Custom Route
-```
+``` C++
 _updateServer.setup(&_server, "/customroute");
 ```
 #### Credentials
-```
+``` C++
 _updateServer.setup(&_server, "username", "password");
+```
+or
+``` C++
+_updateServer.setup(&_server, "/customroute", "username", "password");
 ```
 
 > [!IMPORTANT]
