@@ -1,6 +1,6 @@
 {
     "name": "ESPAsyncHTTPUpdateServer",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "description": "Simple HTTP Update server based on the ESP8266WebServer modifed for ESPAsyncWebServer(by me-no-dev).",
     "keywords": "ESP, Async, OTA, WebServer, HTTP, Update",
     "repository":
