@@ -1,8 +1,18 @@
 #include <Arduino.h>
-#include <flash_hal.h>
-#include <FS.h>
 #include "StreamString.h"
 #include "ESPAsyncHTTPUpdateServer.h"
+
+#ifdef ESP32
+    #ifdef ESPASYNCHTTPUPDATESERVER_LITTLEFS
+        #include <LittleFS.h>
+    #else
+        #include <SPIFFS.h>
+    #endif
+    #include <Update.h>
+#elif defined(ESP8266)
+    #include <flash_hal.h>
+    #include <FS.h>
+#endif
 
 static const char serverIndex[] PROGMEM =
     R"(<!DOCTYPE html>
@@ -61,7 +71,7 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
             _authenticated = (_username == emptyString || _password == emptyString || request -> authenticate(_username.c_str(), _password.c_str()));
             if (!_authenticated)
             {
-#ifdef DEBUG
+#ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
                 Serial.printf("Unauthenticated Update\n");
 #endif
                 return;
@@ -71,22 +81,24 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
     _server->on(
         path.c_str(), HTTP_POST, [&](AsyncWebServerRequest *request)
         {
-            //if requestAuthentication() is false second handler will run, else it wont.
-            if(!_authenticated)
-                return request->requestAuthentication();
+        // if requestAuthentication() is false second handler will run, else it wont.
+        if (!_authenticated)
+            return request->requestAuthentication();
 
-            if (Update.hasError()) {
-                AsyncWebServerResponse* response = request->beginResponse(200,F("text/html"), String(F("Update error: ")) + _updaterError);
-                response->addHeader("Access-Control-Allow-Headers", "*");
-                response->addHeader("Access-Control-Allow-Origin", "*");
-                response->addHeader("Connection", "close");
-                request->send(response); 
-            } 
-            else {
-                request->send_P(200, PSTR("text/html"), successResponse);
-                delay(1000);
-                ESP.restart();
-            } },
+        if (Update.hasError())
+        {
+            AsyncWebServerResponse *response = request->beginResponse(200, F("text/html"), String(F("Update error: ")) + _updaterError);
+            response->addHeader("Access-Control-Allow-Headers", "*");
+            response->addHeader("Access-Control-Allow-Origin", "*");
+            response->addHeader("Connection", "close");
+            request->send(response);
+        }
+        else
+        {
+            request->send_P(200, PSTR("text/html"), successResponse);
+            delay(1000);
+            ESP.restart();
+        } },
         [&](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final)
         {
             // handler for the file upload, gets the sketch bytes, and writes
@@ -97,38 +109,51 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
             if (!index)
             {
                 _updaterError.clear();
-#ifdef DEBUG
+#ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
                 Serial.setDebugOutput(true);
 #endif
                 _authenticated = (_username == emptyString || _password == emptyString || request->authenticate(_username.c_str(), _password.c_str()));
                 if (!_authenticated)
                 {
-#ifdef DEBUG
+#ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
                     Serial.printf("Unauthenticated Update\n");
 #endif
                     return;
                 }
-#ifdef DEBUG
+#ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
                 Serial.printf("Update: %s\n", filename.c_str());
 #endif
+#ifdef ESP8266
                 Update.runAsync(true);
+#endif
                 if (inputName == "filesystem")
                 {
-#ifdef DEBUG
+#ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
                     Serial.println("updating filesystem");
 #endif
+
+#ifdef ESP8266
+                    int command = U_FS;
                     size_t fsSize = ((size_t)FS_end - (size_t)FS_start);
                     close_all_fs();
-                    if (!Update.begin(fsSize, U_FS))
+#elif defined(ESP32)
+                    int command = U_SPIFFS;
+    #ifdef ESPASYNCHTTPUPDATESERVER_LITTLEFS
+                    size_t fsSize = LittleFS.totalBytes();
+    #else
+                    size_t fsSize = SPIFFS.totalBytes();
+    #endif
+#endif
+                    if (!Update.begin(fsSize, command))
                     { // start with max available size
-#ifdef DEBUG
+#ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
                         Update.printError(Serial);
 #endif
                     }
                 }
                 else
                 {
-#ifdef DEBUG
+#ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
                     Serial.println("updating flash");
 #endif
                     uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
@@ -141,7 +166,7 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
 
             if (_authenticated && len && !_updaterError.length())
             {
-#ifdef DEBUG
+#ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
                 Serial.printf(".");
 #endif
                 if (Update.write(data, len) != len)
@@ -152,13 +177,13 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
             {
                 if (Update.end(true))
                 { // true to set the size to the current progress
-#ifdef DEBUG
+#ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
                     Serial.println("Update Success: \nRebooting...\n");
 #endif
                 }
                 else
                     _setUpdaterError();
-#ifdef DEBUG
+#ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
                 Serial.setDebugOutput(false);
 #endif
             }
@@ -169,7 +194,7 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
 
 void ESPAsyncHTTPUpdateServer::_setUpdaterError()
 {
-#ifdef DEBUG
+#ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
     Update.printError(Serial);
 #endif
     StreamString str;

@@ -3,8 +3,6 @@
 
 #include <ESPAsyncWebServer.h>
 
-//#define DEBUG
-
 class ESPAsyncHTTPUpdateServer
 {
 public:

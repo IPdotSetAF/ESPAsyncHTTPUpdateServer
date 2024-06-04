@@ -19,9 +19,25 @@
     ],
     "license": "LGPL-V2.1",
     "homepage": "https://www.ip-af.ir/Projects/Electronics/ESPAsyncHTTPUpdateServer",
-    "dependencies": {
-      "me-no-dev/ESP Async WebServer": "*"
-    },
+    "dependencies": [
+      {"me-no-dev/ESP Async WebServer": "*"}
+      ,
+        {
+          "name": "SPIFFS",
+          "frameworks": "arduino",
+          "platforms": "espressif32"
+        },
+        {
+          "name": "LittleFS",
+          "frameworks": "arduino",
+          "platforms": "espressif32"
+        },
+        {
+          "name": "Update",
+          "frameworks": "arduino",
+          "platforms": "espressif32"
+        }
+      ],
     "frameworks": "*",
     "platforms": "*"
   }
