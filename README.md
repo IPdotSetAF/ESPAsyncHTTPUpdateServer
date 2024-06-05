@@ -61,10 +61,8 @@ _updateServer.setup(&_server, "/customroute", "username", "password");
 >This will enable the library to print logs to the Serial.
 
 ## TODO:
-- ESP8266 LittleFS support
-- example sketches
-- pio publish
-- arduino publish
+- ESP8266 LittleFS support
+- pio publish
 
 ## Contribution
 - You can open Issues for any bug report or feature request.
