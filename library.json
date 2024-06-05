@@ -1,8 +1,18 @@
 {
     "name": "ESPAsyncHTTPUpdateServer",
     "version": "1.0.0",
-    "description": "Simple HTTP Update server based on the ESP8266WebServer modifed for ESPAsyncWebServer(by me-no-dev).",
-    "keywords": "ESP, Async, OTA, WebServer, HTTP, Update",
+    "description": "Simple HTTP Update Server for ESPAsyncWebServer(by me-no-dev). This library lets you to update Firmware/FileSystem of ESP32/ESP8266 OTA(Over The Air) from a web page.",
+    "keywords": 
+    [
+      "ESP",
+      "Async",
+      "OTA",
+      "WebServer",
+      "HTTP",
+      "UpdateServer",
+      "FileSystem",
+      "Firmware"
+    ],
     "repository":
     {
       "type": "git",
@@ -12,32 +22,53 @@
     [
       {
         "name": "Mohammad Mahdi Nazari",
-        "email": "IPdotSetAF@gmail.com",
+        "email": "ipdotsetaf@gmail.com",
         "url": "https://github.com/IPdotSetAF",
         "maintainer": true
       }
     ],
-    "license": "LGPL-V2.1",
+    "license": "LGPL-2.1-only",
     "homepage": "https://github.com/IPdotSetAF/ESPAsyncHTTPUpdateServer",
-    "dependencies": [
-      {"me-no-dev/ESP Async WebServer": "*"}
-      ,
-        {
-          "name": "SPIFFS",
-          "frameworks": "arduino",
-          "platforms": "espressif32"
-        },
-        {
-          "name": "LittleFS",
-          "frameworks": "arduino",
-          "platforms": "espressif32"
-        },
-        {
-          "name": "Update",
-          "frameworks": "arduino",
-          "platforms": "espressif32"
-        }
-      ],
-    "frameworks": "*",
-    "platforms": "*"
+    "dependencies": 
+    [
+      {
+        "owner": "me-no-dev",
+        "name": "ESP Async WebServer",
+        "frameworks": "arduino",
+        "platforms": 
+        [
+          "espressif32",
+          "espressif8266"
+        ],
+        "version": ">=1.2.3"
+      },
+      {
+        "name": "SPIFFS",
+        "frameworks": "arduino",
+        "platforms": "espressif32",
+        "version": "*"
+      },
+      {
+        "name": "LittleFS",
+        "frameworks": "arduino",
+        "platforms":
+        [
+          "espressif32",
+          "espressif8266"
+        ],
+        "version": "*"
+      },
+      {
+        "name": "Update",
+        "frameworks": "arduino",
+        "platforms": "espressif32",
+        "version": "*"
+      }
+    ],
+    "frameworks": "arduino",
+    "platforms": 
+    [
+      "espressif32",
+      "espressif8266"
+    ]
   }
