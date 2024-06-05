@@ -21,6 +21,12 @@ It will provide a simple webpage for updating the firmware or filesystem of `ESP
 
 ## HowTo
 
+### Install
+
+This Library is available in `Arduino Library Repository` and `PIO` and you can install it from: 
+- Arduino IDE Library Manager
+- PlatformIO Libraries
+
 ### Setup
 1. Include the library after `ESPAsyncWebServer.h`
 ``` C++
@@ -61,8 +67,7 @@ _updateServer.setup(&_server, "/customroute", "username", "password");
 >This will enable the library to print logs to the Serial.
 
 ## TODO:
-- ESP8266 LittleFS support
-- pio publish
+- ESP8266 LittleFS support
 
 ## Contribution
 - You can open Issues for any bug report or feature request.
