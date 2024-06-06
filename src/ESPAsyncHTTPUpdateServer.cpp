@@ -16,7 +16,16 @@
   #error "This library only supports boards with an ESP8266 or ESP32 processor."
 #endif
 
-#define SerialOutput Serial
+#ifdef ESPASYNCHTTPUPDATESERVER_SERIAL0
+    #define SerialOutput Serial0
+#elif defined(ESPASYNCHTTPUPDATESERVER_SERIAL1)
+    #define SerialOutput Serial1
+#elif defined(ESPASYNCHTTPUPDATESERVER_SERIAL2)
+    #define SerialOutput Serial2
+#else
+    #define SerialOutput Serial
+#endif
+
 
 static const char serverIndex[] PROGMEM =
     R"(<!DOCTYPE html>
