@@ -66,6 +66,9 @@ _updateServer.setup(&_server, "/customroute", "username", "password");
 >
 >This will enable the library to print logs to the Serial.
 
+>### Selecting another serial port
+>In case you use another serial port, such as Serial0,Serial1 or Serial2, if your controller support those, you can add '-DESPASYNCHTTPUPDATESERVER_SERIAL0' Build Flag to your environment, adjust the final digit to the serial port you want to use  
+
 ## TODO:
 - ESP8266 LittleFS support
 
