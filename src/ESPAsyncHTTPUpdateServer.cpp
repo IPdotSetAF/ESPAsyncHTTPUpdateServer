@@ -16,7 +16,15 @@
   #error "This library only supports boards with an ESP8266 or ESP32 processor."
 #endif
 
-#define SerialOutput Serial
+#ifndef ESPASYNCHTTPUPDATESERVER_SerialOutput
+    #define ESPASYNCHTTPUPDATESERVER_SerialOutput Serial
+#endif
+
+#ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
+    #define Log(...) ESPASYNCHTTPUPDATESERVER_SerialOutput.printf(__VA_ARGS__)
+#else
+    #define Log(...) 
+#endif
 
 static const char serverIndex[] PROGMEM =
     R"(<!DOCTYPE html>
@@ -75,9 +83,7 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
             _authenticated = (_username == emptyString || _password == emptyString || request -> authenticate(_username.c_str(), _password.c_str()));
             if (!_authenticated)
             {
-#ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
-                SerialOutput.printf("Unauthenticated Update\n");
-#endif
+                Log("Unauthenticated Update\n");
                 return;
             } });
 
@@ -114,28 +120,21 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
             {
                 _updaterError.clear();
 #ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
-                SerialOutput.setDebugOutput(true);
+                ESPASYNCHTTPUPDATESERVER_SerialOutput.setDebugOutput(true);
 #endif
                 _authenticated = (_username == emptyString || _password == emptyString || request->authenticate(_username.c_str(), _password.c_str()));
                 if (!_authenticated)
                 {
-#ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
-                    SerialOutput.printf("Unauthenticated Update\n");
-#endif
+                    Log("Unauthenticated Update\n");
                     return;
                 }
-#ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
-                SerialOutput.printf("Update: %s\n", filename.c_str());
-#endif
+                Log("Update: %s\n", filename.c_str());
 #ifdef ESP8266
                 Update.runAsync(true);
 #endif
                 if (inputName == "filesystem")
                 {
-#ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
-                    SerialOutput.println("updating filesystem");
-#endif
-
+                    Log("updating filesystem");
 #ifdef ESP8266
                     int command = U_FS;
                     size_t fsSize = ((size_t)FS_end - (size_t)FS_start);
@@ -151,28 +150,22 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
                     if (!Update.begin(fsSize, command))
                     { // start with max available size
 #ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
-                        Update.printError(Serial);
+                        Update.printError(ESPASYNCHTTPUPDATESERVER_SerialOutput);
 #endif
                     }
                 }
                 else
                 {
-#ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
-                    SerialOutput.println("updating flash");
-#endif
+                    Log("updating flash");
                     uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
-                    if (!Update.begin(maxSketchSpace, U_FLASH))
-                    { // start with max available size
+                    if (!Update.begin(maxSketchSpace, U_FLASH)) // start with max available size
                         _setUpdaterError();
-                    }
                 }
             }
 
             if (_authenticated && len && !_updaterError.length())
             {
-#ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
-                SerialOutput.printf(".");
-#endif
+                Log(".");
                 if (Update.write(data, len) != len)
                     _setUpdaterError();
             }
@@ -180,15 +173,13 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
             if (_authenticated && final && !_updaterError.length())
             {
                 if (Update.end(true))
-                { // true to set the size to the current progress
-#ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
-                    SerialOutput.println("Update Success: \nRebooting...\n");
-#endif
+                {// true to set the size to the current progress
+                    Log("Update Success: \nRebooting...\n");
                 }
                 else
                     _setUpdaterError();
 #ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
-                SerialOutput.setDebugOutput(false);
+                ESPASYNCHTTPUPDATESERVER_SerialOutput.setDebugOutput(false);
 #endif
             }
             else
@@ -199,7 +190,7 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
 void ESPAsyncHTTPUpdateServer::_setUpdaterError()
 {
 #ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
-    Update.printError(Serial);
+    Update.printError(ESPASYNCHTTPUPDATESERVER_SerialOutput);
 #endif
     StreamString str;
     Update.printError(str);

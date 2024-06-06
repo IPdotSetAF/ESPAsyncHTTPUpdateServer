@@ -1,3 +1,11 @@
+<p align=left>
+   <img src="https://img.shields.io/github/v/release/IPdotSetAF/ESPAsyncHTTPUpdateServer"/>
+   <img src="https://img.shields.io/github/release-date/IPdotSetAF/ESPAsyncHTTPUpdateServer"/>
+   <img src="https://img.shields.io/github/last-commit/IPdotSetAF/ESPAsyncHTTPUpdateServer"/>
+   <img src="https://img.shields.io/github/license/IPdotSetAF/ESPAsyncHTTPUpdateServer"/>
+   <!--<img src="https://img.shields.io/github/downloads/IPdotSetAF/ESPAsyncHTTPUpdateServer/total"/>-->
+</p>
+
 # ESP Async HTTP Update Server
 
 This is a copy of [ESP8266HTTPUpdateServer](https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266HTTPUpdateServer)/[ESP32's HTTPUpdateServer](https://github.com/espressif/arduino-esp32/tree/master/libraries/HTTPUpdateServer) library, modified to be compatible with [ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer).
@@ -56,15 +64,18 @@ or
 _updateServer.setup(&_server, "/customroute", "username", "password");
 ```
 
+### Selecting FileSystem
 > [!IMPORTANT]
-> ### Selecting FileSystem
 > The library's default fileSystem is `SPIFFS` but if you are using `LittleFS` for your FileSystem, make sure to add the `-DESPASYNCHTTPUPDATESERVER_LITTLEFS` Build Flag to your environment.
 
+### Debugging
 > [!TIP]
-> ### Debugging
 > In order to debug the library funtionality, you can add the `-DESPASYNCHTTPUPDATESERVER_DEBUG` Build Flag to your environment.
 >
->This will enable the library to print logs to the Serial.
+> This will enable the library to print logs to the Serial.
+
+> [!TIP]
+> If you are using another `Serial` port, you can override the default serial by adding the `-DESPASYNCHTTPUPDATESERVER_SerialOutput=Serial1` Build Flag to your environment.
 
 ## TODO:
 - ESP8266 LittleFS support
