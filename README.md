@@ -65,9 +65,8 @@ _updateServer.setup(&_server, "/customroute", "username", "password");
 > In order to debug the library funtionality, you can add the `-DESPASYNCHTTPUPDATESERVER_DEBUG` Build Flag to your environment.
 >
 >This will enable the library to print logs to the Serial.
-
 >### Selecting another serial port
->In case you use another serial port, such as Serial0,Serial1 or Serial2, if your controller support those, you can add '-DESPASYNCHTTPUPDATESERVER_SERIAL0' Build Flag to your environment, adjust the final digit to the serial port you want to use  
+>In case you use another serial port, such as Serial0,Serial1 or Serial2, if your controller support those, you can add `-DESPASYNCHTTPUPDATESERVER_SERIAL0` Build Flag to your environment, adjust the final digit to the serial port you want to use  
 
 ## TODO:
 - ESP8266 LittleFS support
