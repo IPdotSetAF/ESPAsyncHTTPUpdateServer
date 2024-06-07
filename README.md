@@ -78,7 +78,7 @@ _updateServer.setup(&_server, "/customroute", "username", "password");
 > If you are using another `Serial` port, you can override the default serial by adding the `-DESPASYNCHTTPUPDATESERVER_SerialOutput=Serial1` Build Flag to your environment.
 
 ## TODO:
-- ESP8266 LittleFS support
+- Optional Page Styling
 
 ## Contribution
 - You can open Issues for any bug report or feature request.
