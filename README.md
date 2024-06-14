@@ -33,9 +33,13 @@ It will provide a simple webpage for updating the firmware or filesystem of `ESP
 
 This Library is available in `Arduino Library Repository` and `PIO` and you can install it from: 
 - Arduino IDE Library Manager
+  
 ![arduino library manager](image.png)
+
 - PlatformIO Libraries
+- 
 ![pltformio library](image-1.png)
+
 `ipdotsetaf/ESPAsyncHTTPUpdateServer@^1.1.0`
 ### Setup
 1. Include the library after `ESPAsyncWebServer.h`
@@ -72,7 +76,7 @@ _updateServer.setup(&_server, "/customroute", "username", "password");
 
 ### Debugging
 > [!TIP]
-> In order to debug the library funtionality, you can add the `-DESPASYNCHTTPUPDATESERVER_DEBUG` Build Flag to your environment.
+> In order to debug the library functionality, you can add the `-DESPASYNCHTTPUPDATESERVER_DEBUG` Build Flag to your environment.
 >
 > This will enable the library to print logs to the Serial.
 
