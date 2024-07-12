@@ -27,25 +27,7 @@
 #endif
 
 static const char serverIndex[] PROGMEM =
-    R"(<!DOCTYPE html>
-     <html lang='en'>
-     <head>
-         <meta charset='utf-8'>
-         <meta name='viewport' content='width=device-width,initial-scale=1'/>
-     </head>
-     <body>
-     <form method='POST' action='?name=firmware' enctype='multipart/form-data'>
-         Firmware:<br>
-         <input type='file' accept='.bin,.bin.gz' name='firmware'>
-         <input type='submit' value='Update Firmware'>
-     </form>
-     <form method='POST' action='?name=filesystem' enctype='multipart/form-data'>
-         FileSystem:<br>
-         <input type='file' accept='.bin,.bin.gz' name='filesystem'>
-         <input type='submit' value='Update FileSystem'>
-     </form>
-     </body>
-     </html>)";
+    R"(<!doctypehtml><html lang=en><meta charset=utf-8><meta content="width=device-width,initial-scale=1"name=viewport><form action="?name=firmware"enctype=multipart/form-data method=POST>Firmware:<br><input type=file accept=.bin,.bin.gz name=firmware> <input type=submit value="Update Firmware"></form><form action="?name=filesystem"enctype=multipart/form-data method=POST>FileSystem:<br><input type=file accept=.bin,.bin.gz name=filesystem> <input type=submit value="Update FileSystem"></form>)";
 static const char successResponse[] PROGMEM =
     "<META http-equiv=\"refresh\" content=\"15;URL=/\">Update Success! Rebooting...";
 
