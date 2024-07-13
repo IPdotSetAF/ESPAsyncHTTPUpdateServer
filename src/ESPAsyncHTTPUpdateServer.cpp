@@ -29,7 +29,7 @@
 static const char serverIndex[] PROGMEM =
     R"(<!doctypehtml><html lang=en><meta charset=utf-8><meta content="width=device-width,initial-scale=1"name=viewport><form action="?name=firmware"enctype=multipart/form-data method=POST>Firmware:<br><input type=file accept=.bin,.bin.gz name=firmware> <input type=submit value="Update Firmware"></form><form action="?name=filesystem"enctype=multipart/form-data method=POST>FileSystem:<br><input type=file accept=.bin,.bin.gz name=filesystem> <input type=submit value="Update FileSystem"></form>)";
 static const char successResponse[] PROGMEM =
-    "<META http-equiv=\"refresh\" content=\"15;URL=/\">Update Success! Rebooting...";
+    R"(<meta content="15;URL=/"http-equiv=refresh>Update Success! Rebooting...)";
 
 ESPAsyncHTTPUpdateServer::ESPAsyncHTTPUpdateServer()
 {
