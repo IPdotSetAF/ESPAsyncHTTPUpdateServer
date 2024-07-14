@@ -37,7 +37,7 @@ This Library is available in `Arduino Library Repository` and `PIO` and you can 
 ![arduino library manager](image.png)
 
 - PlatformIO Libraries
-- 
+
 ![pltformio library](image-1.png)
 
 `ipdotsetaf/ESPAsyncHTTPUpdateServer@^1.1.0`

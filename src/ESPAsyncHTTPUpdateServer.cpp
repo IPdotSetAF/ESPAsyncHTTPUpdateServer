@@ -26,28 +26,12 @@
     #define Log(...) 
 #endif
 
-static const char serverIndex[] PROGMEM =
-    R"(<!DOCTYPE html>
-     <html lang='en'>
-     <head>
-         <meta charset='utf-8'>
-         <meta name='viewport' content='width=device-width,initial-scale=1'/>
-     </head>
-     <body>
-     <form method='POST' action='?name=firmware' enctype='multipart/form-data'>
-         Firmware:<br>
-         <input type='file' accept='.bin,.bin.gz' name='firmware'>
-         <input type='submit' value='Update Firmware'>
-     </form>
-     <form method='POST' action='?name=filesystem' enctype='multipart/form-data'>
-         FileSystem:<br>
-         <input type='file' accept='.bin,.bin.gz' name='filesystem'>
-         <input type='submit' value='Update FileSystem'>
-     </form>
-     </body>
-     </html>)";
+//https://kangax.github.io/html-minifier/
+//https://gchq.github.io/CyberChef/#recipe=Gzip('Dynamic%20Huffman%20Coding','','',false)To_Decimal('Comma',false)&input=PCFkb2N0eXBlaHRtbD48aHRtbCBsYW5nPWVuPjxtZXRhIGNoYXJzZXQ9dXRmLTg%2BPG1ldGEgY29udGVudD0id2lkdGg9ZGV2aWNlLXdpZHRoLGluaXRpYWwtc2NhbGU9MSJuYW1lPXZpZXdwb3J0Pjxmb3JtIGFjdGlvbj0iP25hbWU9ZmlybXdhcmUiZW5jdHlwZT1tdWx0aXBhcnQvZm9ybS1kYXRhIG1ldGhvZD1QT1NUPkZpcm13YXJlOjxicj48aW5wdXQgdHlwZT1maWxlIGFjY2VwdD0uYmluLC5iaW4uZ3ogbmFtZT1maXJtd2FyZT4gPGlucHV0IHR5cGU9c3VibWl0IHZhbHVlPSJVcGRhdGUgRmlybXdhcmUiPjwvZm9ybT48Zm9ybSBhY3Rpb249Ij9uYW1lPWZpbGVzeXN0ZW0iZW5jdHlwZT1tdWx0aXBhcnQvZm9ybS1kYXRhIG1ldGhvZD1QT1NUPkZpbGVTeXN0ZW06PGJyPjxpbnB1dCB0eXBlPWZpbGUgYWNjZXB0PS5iaW4sLmJpbi5neiBuYW1lPWZpbGVzeXN0ZW0%2BIDxpbnB1dCB0eXBlPXN1Ym1pdCB2YWx1ZT0iVXBkYXRlIEZpbGVTeXN0ZW0iPjwvZm9ybT4&oeol=FF
+static const uint8_t serverIndex[] PROGMEM =
+    {31,139,8,0,47,63,148,102,0,255,149,142,77,75,196,48,16,64,255,74,204,121,187,226,77,36,19,111,94,21,86,127,192,52,157,110,7,242,69,58,109,89,127,253,182,193,138,30,4,247,50,144,73,94,222,51,119,93,114,114,201,52,72,240,214,108,83,121,140,103,160,104,77,32,65,229,6,44,35,9,76,210,55,143,251,46,69,161,40,160,23,238,100,128,142,102,118,212,212,195,129,35,11,163,111,70,135,158,224,65,71,12,4,51,211,146,83,17,107,250,84,130,66,39,156,34,232,231,122,217,115,9,11,22,210,20,107,10,132,201,11,103,44,114,191,189,110,58,92,149,171,119,72,29,188,189,158,222,237,203,23,240,100,218,98,13,199,60,137,170,96,207,158,214,207,29,101,129,99,203,241,176,141,227,249,83,253,242,88,245,147,25,167,54,176,168,25,253,68,160,63,242,106,35,181,27,180,53,181,225,143,110,79,227,101,20,10,55,148,123,58,85,228,230,246,221,245,175,250,221,242,221,127,5,2,22,24,226,232,1,0,0};
 static const char successResponse[] PROGMEM =
-    "<META http-equiv=\"refresh\" content=\"15;URL=/\">Update Success! Rebooting...";
+    R"(<meta content="15;URL=/"http-equiv=refresh>Update Success! Rebooting...)";
 
 ESPAsyncHTTPUpdateServer::ESPAsyncHTTPUpdateServer()
 {
@@ -69,8 +53,9 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
             if(_username != emptyString && _password != emptyString)
                 if( !request->authenticate(_username.c_str(), _password.c_str()))
                     return request->requestAuthentication();
-
-            request->send_P(200, "text/html", serverIndex); });
+            AsyncWebServerResponse* response = request->beginResponse_P(200, "text/html", serverIndex, sizeof(serverIndex));
+            response->addHeader("Content-Encoding", "gzip");
+            request->send(response);  });
 
     // handler for the /update form page - preflight options
     _server->on(path.c_str(), HTTP_OPTIONS, [&](AsyncWebServerRequest *request)
