@@ -19,6 +19,9 @@ It will provide a simple webpage for updating the firmware or filesystem of `ESP
 - Can Update:
     - Firmware
     - FileSystem
+- Styling:
+    - Stylized (Additional ~350 bytes)
+    - Minimal
 - Update route customization (default: `/update`)
 - Update credentials customization (default: `No credentials`)
     - Username
@@ -69,6 +72,15 @@ or
 ``` C++
 _updateServer.setup(&_server, "/customroute", "username", "password");
 ```
+
+### Styling
+- Stylized
+![Stylized OTA Page](image-2.png)
+
+- Minimal
+![alt text](image-3.png)
+
+By default styling is disabled in order to save ~350 bytes of flash memory, but if you don't have that flash memory constraint you can enable it by adding the `-DESPASYNCHTTPUPDATESERVER_PRETTY` Build Flag to your environment.
 
 ### Selecting FileSystem
 > [!IMPORTANT]
