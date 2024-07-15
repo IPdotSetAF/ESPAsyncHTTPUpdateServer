@@ -85,7 +85,7 @@ _updateServer.setup(&_server, "/customroute", "username", "password");
 > [!IMPORTANT]
 > By default styling is disabled in order to save ~350 bytes of flash memory.
 >
-> you can enable THE styling by adding the `-DESPASYNCHTTPUPDATESERVER_PRETTY` Build Flag to your environment.
+> you can enable the styling by adding the `-DESPASYNCHTTPUPDATESERVER_PRETTY` Build Flag to your environment.
 
 ### Selecting FileSystem
 > [!IMPORTANT]
