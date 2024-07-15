@@ -37,11 +37,11 @@ It will provide a simple webpage for updating the firmware or filesystem of `ESP
 This Library is available in `Arduino Library Repository` and `PIO` and you can install it from: 
 - Arduino IDE Library Manager
   
-![arduino library manager](image.png)
+<img width="500" src="image.png" alt="arduino library manager"/>
 
 - PlatformIO Libraries
 
-![pltformio library](image-1.png)
+<img width="500" src="image-1.png" alt="pltformio library"/>
 
 `ipdotsetaf/ESPAsyncHTTPUpdateServer@^2.0.0`
 ### Setup
@@ -76,11 +76,11 @@ _updateServer.setup(&_server, "/customroute", "username", "password");
 ### Styling
 - Stylized
 
-![Stylized OTA Page](image-2.png)
+<img width="500" src="image-2.png" alt="Stylized OTA Page"/>
 
 - Minimal
 
-![alt text](image-3.png)
+<img width="500" src="image-3.png" alt="Minimal OTA Page"/>
 
 > [!IMPORTANT]
 > By default styling is disabled in order to save ~350 bytes of flash memory.
