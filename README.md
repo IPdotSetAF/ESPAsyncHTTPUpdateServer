@@ -43,7 +43,7 @@ This Library is available in `Arduino Library Repository` and `PIO` and you can 
 
 ![pltformio library](image-1.png)
 
-`ipdotsetaf/ESPAsyncHTTPUpdateServer@^1.1.0`
+`ipdotsetaf/ESPAsyncHTTPUpdateServer@^2.0.0`
 ### Setup
 1. Include the library after `ESPAsyncWebServer.h`
 ``` C++
@@ -75,9 +75,11 @@ _updateServer.setup(&_server, "/customroute", "username", "password");
 
 ### Styling
 - Stylized
+
 ![Stylized OTA Page](image-2.png)
 
 - Minimal
+
 ![alt text](image-3.png)
 
 > [!IMPORTANT]
