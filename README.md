@@ -10,7 +10,12 @@
 
 This is a copy of [ESP8266HTTPUpdateServer](https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266HTTPUpdateServer)/[ESP32's HTTPUpdateServer](https://github.com/espressif/arduino-esp32/tree/master/libraries/HTTPUpdateServer) library, modified to be compatible with [ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer).
 
-It will provide a simple webpage for updating the firmware or filesystem of `ESP8266` or `ESP32` microcontrollers.
+It will provide a webpage for updating the firmware/filesystem of `ESP8266` or `ESP32` microcontrollers.
+
+> [!IMPORTANT]
+> If you found this library helpful, please consider leaving a Star⭐
+> 
+> It helps a lot in maintaining the project ❤️
 
 ## Features
 - Supports:
@@ -37,7 +42,7 @@ It will provide a simple webpage for updating the firmware or filesystem of `ESP
 This Library is available in `Arduino Library Repository` and `PIO` and you can install it from: 
 - Arduino IDE Library Manager
   
-<img width="500" src="image.png" alt="arduino library manager"/>
+<img width="500" src="image.png" alt="Arduino library manager"/>
 
 - PlatformIO Libraries
 
@@ -83,9 +88,9 @@ _updateServer.setup(&_server, "/customroute", "username", "password");
 <img width="500" src="image-3.png" alt="Minimal OTA Page"/>
 
 > [!IMPORTANT]
-> By default styling is disabled in order to save ~350 bytes of flash memory.
+> By default styling is disabled to save ~350 bytes of flash memory.
 >
-> you can enable the styling by adding the `-DESPASYNCHTTPUPDATESERVER_PRETTY` Build Flag to your environment.
+> You can enable the styling by adding the `-DESPASYNCHTTPUPDATESERVER_PRETTY` Build Flag to your environment.
 
 ### Selecting FileSystem
 > [!IMPORTANT]
@@ -93,7 +98,7 @@ _updateServer.setup(&_server, "/customroute", "username", "password");
 
 ### Debugging
 > [!TIP]
-> In order to debug the library functionality, you can add the `-DESPASYNCHTTPUPDATESERVER_DEBUG` Build Flag to your environment.
+> To debug the library functionality, you can add the `-DESPASYNCHTTPUPDATESERVER_DEBUG` Build Flag to your environment.
 >
 > This will enable the library to print logs to the Serial.
 
@@ -101,7 +106,8 @@ _updateServer.setup(&_server, "/customroute", "username", "password");
 > If you are using another `Serial` port, you can override the default serial by adding the `-DESPASYNCHTTPUPDATESERVER_SerialOutput=Serial1` Build Flag to your environment.
 
 ## TODO:
-- custom css support
+- Custom CSS support
+- Synchronous WebServer support
 
 ## Contribution
 - You can open Issues for any bug report or feature request.
