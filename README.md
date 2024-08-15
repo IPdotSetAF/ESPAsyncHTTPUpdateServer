@@ -105,6 +105,10 @@ _updateServer.setup(&_server, "/customroute", "username", "password");
 > [!TIP]
 > If you are using another `Serial` port, you can override the default serial by adding the `-DESPASYNCHTTPUPDATESERVER_SerialOutput=Serial1` Build Flag to your environment.
 
+### Server Working Example
+
+Please refer to this [fully working example](examples/simple_server/simple_server.ino)
+
 ## TODO:
 - Custom CSS support
 - Synchronous WebServer support
