@@ -1,5 +1,5 @@
 <p align=left>
-   <img src="https://www.ardu-badge.com/badge/ESPAsyncHTTPUpdateServer.svg"/>
+   <a href="https://www.ardu-badge.com/ESPAsyncHTTPUpdateServer"><img src="https://www.ardu-badge.com/badge/ESPAsyncHTTPUpdateServer.svg"/></a>
    <img src="https://img.shields.io/github/v/release/IPdotSetAF/ESPAsyncHTTPUpdateServer"/>
    <img src="https://img.shields.io/github/release-date/IPdotSetAF/ESPAsyncHTTPUpdateServer"/>
    <img src="https://img.shields.io/github/last-commit/IPdotSetAF/ESPAsyncHTTPUpdateServer"/>
