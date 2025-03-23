@@ -1,0 +1,61 @@
+<!doctypehtml>
+    <html lang=en>
+    <meta charset=utf-8>
+    <meta content="width=device-width,initial-scale=1" name=viewport>
+    <style>
+        * {
+            font-family: monospace;
+            border-radius: 10px
+        }
+
+        h2 {
+            margin-top: 0
+        }
+
+        h1 {
+            color: #eeaeca;
+            font-size: 80px
+        }
+
+        body {
+            background: #222;
+            gap: 30px;
+            margin: 0;
+            height: 100vh
+        }
+
+        form {
+            color: #6b354f;
+            background: linear-gradient(270deg, #eeaeca 0, #94bbe9 100%);
+            padding: 30px
+        }
+
+        input {
+            border: 2px solid #6b354f;
+            box-shadow: 0 10px 10px 2px #0003;
+            height: 35px
+        }
+
+        input::file-selector-button,
+        input[type=submit] {
+            background: #6b354f;
+            color: #fff;
+            height: 100%;
+            font-family: monospace;
+            border: none
+        }
+
+        .c {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center
+        }
+    </style>
+
+    <body class=c>
+        <h1>(⌐■_■) OTA</h1>
+        <form action="?name=firmware" class=c enctype=multipart/form-data method=POST>
+            <h2>Firmware</h2>
+            <div><input type=file accept=.bin,.bin.gz name=firmware> <input type=submit value="Update Firmware"></div>
+        </form>
