@@ -100,8 +100,8 @@ _updateServer.setup(&_server, "/customroute", "username", "password");
 >
 > | Update mode | value |
 > |:---:|:---:|
-> |Firmaware and FileSystem|0|
-> |Firmaware only|1|
+> |Firmware and FileSystem|0|
+> |Firmware only|1|
 > |FileSystem only|2|
 
 #### Modifying Htmls
