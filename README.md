@@ -42,13 +42,10 @@ It will provide a webpage for updating the firmware/filesystem of `ESP8266` or `
 ### Install
 
 This Library is available in `Arduino Library Repository` and `PIO` and you can install it from: 
-- Arduino IDE Library Manager
-  
-<img width="500" src="image.png" alt="Arduino library manager"/>
 
-- PlatformIO Libraries
-
-<img width="500" src="image-1.png" alt="pltformio library"/>
+| Arduino IDE Library Manager | PlatformIO Libraries |
+|:---:|:---:|
+|<img width="500" src="previews/arduino.png" alt="Arduino library manager"/>|<img width="500" src="previews/pio.png" alt="pltformio library"/>|
 
 `ipdotsetaf/ESPAsyncHTTPUpdateServer@^2.0.0`
 ### Setup
@@ -82,42 +79,35 @@ _updateServer.setup(&_server, "/customroute", "username", "password");
 
 ### Styling and Customizing OTA Page
 
-<table>
-  <tr>
-    <td>OTA Mode</td>
-    <td>Stylized</td>
-    <td>Minimal(default)</td>
- </tr>
- <tr>
-    <td>Default</td>
-    <td><img width="450" src="image-2.png" alt="Stylized OTA Page"/></td>
-    <td><img width="450" src="image-3.png" alt="Minimal OTA Page"/></td>
-  </tr>
-  <tr>
-    <td>Firmware Only</td>
-    <td><img width="450" src="image-4_s_firmware.png" alt="Stylized OTA Firmware Only Page"/></td>
-    <td><img width="450" src="image-4_n_firmware.png" alt="Minimal OTA Firmware Only Page"/></td>
-  </tr> 
-  <tr>
-    <td>Filesystem Only</td>
-    <td><img width="450" src="image-4_s_filesystem.png" alt="Stylized OTA Filesystem OnlyPage"/></td>
-    <td><img width="450" src="image-4_n_filesystem.png" alt="Minimal OTA Filesystem Only Page"/></td>
-  </tr>     
-</table>
+| Stylized | Minimal |
+|:---:|:---:|
+|<img width="450" src="previews/stylized.png" alt="Stylized OTA Page"/> | <img width="450" src="previews/minimal.png" alt="Minimal OTA Page"/> |
 
 > [!IMPORTANT]
 > By default styling is disabled to save ~350 bytes of flash memory.
 >
 > You can enable the styling by adding the `-DESPASYNCHTTPUPDATESERVER_PRETTY` Build Flag to your environment.
->
-> Adding the `-DESPASYNCHTTPUPDATESERVER_MODE` Build Flag to choose different update mode. this flag has three values:
-> 
-> `-DESPASYNCHTTPUPDATESERVER_MODE=0` firmware and filesystem, which is the default.
-> 
-> `-DESPASYNCHTTPUPDATESERVER_MODE=1` update firmware only.
-> 
-> `-DESPASYNCHTTPUPDATESERVER_MODE=2` update filesystem only.
 
+### Customizing OTA Page
+
+> [!IMPORTANT]
+> Adding the `-DESPASYNCHTTPUPDATESERVER_MODE` Build Flag to choose different update mode. choose the right value based on your needs: 
+>
+> | Update mode | value |
+> |:---:|:---:|
+> |Firmaware and FileSystem|0|
+> |Firmaware only|1|
+> |FileSystem only|2|
+
+#### Modifying Htmls
+
+in case you liked to modify the html of any of the pages, you need to run the `scripts/codeGenerator.py` afterwards so html contents get processed and placed in the source.
+
+Instructions:
+1. Make sure you have python installed
+2. In your python environment run the following
+3. `pip install -r requirements.txt`
+4. `python codeGenerator.py`
 
 ### Selecting FileSystem
 > [!IMPORTANT]
