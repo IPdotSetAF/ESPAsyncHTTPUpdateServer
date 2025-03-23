@@ -29,6 +29,10 @@ It will provide a webpage for updating the firmware/filesystem of `ESP8266` or `
 - Styling:
     - Stylized (Additional ~350 bytes)
     - Minimal
+- Update modes:
+   - Firmware + FileSystem
+   - Firmware only
+   - FileSystem only
 - Update route customization (default: `/update`)
 - Update credentials customization (default: `No credentials`)
     - Username
@@ -91,7 +95,8 @@ _updateServer.setup(&_server, "/customroute", "username", "password");
 ### Customizing OTA Page
 
 > [!IMPORTANT]
-> Adding the `-DESPASYNCHTTPUPDATESERVER_MODE` Build Flag to choose different update mode. choose the right value based on your needs: 
+> Add the `-DESPASYNCHTTPUPDATESERVER_MODE` Build Flag with desired value to choose different update mode.
+> Choose the right value based on your needs from bellow table: 
 >
 > | Update mode | value |
 > |:---:|:---:|
