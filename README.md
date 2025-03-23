@@ -80,19 +80,44 @@ or
 _updateServer.setup(&_server, "/customroute", "username", "password");
 ```
 
-### Styling
-- Stylized
+### Styling and Customizing OTA Page
 
-<img width="500" src="image-2.png" alt="Stylized OTA Page"/>
-
-- Minimal
-
-<img width="500" src="image-3.png" alt="Minimal OTA Page"/>
+<table>
+  <tr>
+    <td>OTA Mode</td>
+    <td>Stylized</td>
+    <td>Minimal(default)</td>
+ </tr>
+ <tr>
+    <td>Default</td>
+    <td><img width="450" src="image-2.png" alt="Stylized OTA Page"/></td>
+    <td><img width="450" src="image-3.png" alt="Minimal OTA Page"/></td>
+  </tr>
+  <tr>
+    <td>Firmware Only</td>
+    <td><img width="450" src="image-4_s_firmware.png" alt="Stylized OTA Firmware Only Page"/></td>
+    <td><img width="450" src="image-4_n_firmware.png" alt="Minimal OTA Firmware Only Page"/></td>
+  </tr> 
+  <tr>
+    <td>Filesystem Only</td>
+    <td><img width="450" src="image-4_s_filesystem.png" alt="Stylized OTA Filesystem OnlyPage"/></td>
+    <td><img width="450" src="image-4_n_filesystem.png" alt="Minimal OTA Filesystem Only Page"/></td>
+  </tr>     
+</table>
 
 > [!IMPORTANT]
 > By default styling is disabled to save ~350 bytes of flash memory.
 >
 > You can enable the styling by adding the `-DESPASYNCHTTPUPDATESERVER_PRETTY` Build Flag to your environment.
+>
+> Adding the `-DESPASYNCHTTPUPDATESERVER_MODE` Build Flag to choose different update mode. this flag has three values:
+> 
+> `-DESPASYNCHTTPUPDATESERVER_MODE=0` firmware and filesystem, which is the default.
+> 
+> `-DESPASYNCHTTPUPDATESERVER_MODE=1` update firmware only.
+> 
+> `-DESPASYNCHTTPUPDATESERVER_MODE=2` update filesystem only.
+
 
 ### Selecting FileSystem
 > [!IMPORTANT]
