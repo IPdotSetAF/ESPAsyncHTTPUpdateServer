@@ -1,2 +1,2 @@
-htmlmin
+htmlmin2
 csscompressor
