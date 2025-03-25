@@ -33,15 +33,15 @@
     "dependencies": 
     [
       {
-        "owner": "me-no-dev",
-        "name": "ESP Async WebServer",
+        "owner": "ESP32Async",
+        "name": "ESPAsyncWebServer",
         "frameworks": "arduino",
         "platforms": 
         [
           "espressif32",
           "espressif8266"
         ],
-        "version": ">=1.2.4"
+        "version": ">=3.7.4"
       },
       {
         "name": "SPIFFS",
