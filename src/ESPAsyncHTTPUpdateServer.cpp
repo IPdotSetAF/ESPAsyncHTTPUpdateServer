@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "StreamString.h"
 #include "ESPAsyncHTTPUpdateServer.h"
+#include <Ticker.h>
 
 #ifdef ESP32
     #ifdef ESPASYNCHTTPUPDATESERVER_LITTLEFS
@@ -55,6 +56,8 @@
 static const char successResponse[] PROGMEM =
     R"(<meta content="15;URL=/"http-equiv=refresh>Update Success! Rebooting...)";
 
+Ticker restartTimer;
+
 ESPAsyncHTTPUpdateServer::ESPAsyncHTTPUpdateServer()
 {
     _server = NULL;
@@ -77,7 +80,7 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
                     return request->requestAuthentication();
             AsyncWebServerResponse* response = request->beginResponse_P(200, "text/html", serverIndex, sizeof(serverIndex));
             response->addHeader("Content-Encoding", "gzip");
-            request->send(response);  });
+            request->send(response); });
 
     // handler for the /update form page - preflight options
     _server->on(path.c_str(), HTTP_OPTIONS, [&](AsyncWebServerRequest *request)
@@ -113,8 +116,7 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
         else
         {
             request->send_P(200, PSTR("text/html"), successResponse);
-            delay(1000);
-            ESP.restart();
+            restartTimer.once_ms(1000, ESP.restart);
         } },
         [&](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final)
         {
@@ -180,7 +182,7 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
             if (_authenticated && final && !_updaterError.length())
             {
                 if (Update.end(true))
-                {// true to set the size to the current progress
+                { // true to set the size to the current progress
                     Log("Update Success: \nRebooting...\n");
                 }
                 else
