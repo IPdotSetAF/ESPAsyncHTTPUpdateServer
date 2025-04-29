@@ -123,11 +123,14 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
             // handler for the file upload, gets the sketch bytes, and writes
             // them through the Update object
 
-            String inputName = request->getParam("name")->value();
+            _updateType = request->getParam("name")->value() == "filesystem"?
+                    UpdateType::FILE_SYSTEM :
+                    UpdateType::FIRMWARE;
 
             if (!index)
             {
                 _updaterError.clear();
+
 #ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
                 ESPASYNCHTTPUPDATESERVER_SerialOutput.setDebugOutput(true);
 #endif
@@ -137,11 +140,25 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
                     Log("Unauthenticated Update\n");
                     return;
                 }
+
+                if (onUpdateBegin)
+                {
+                    _updateResult = UpdateResult::UPDATE_OK;
+                    onUpdateBegin(_updateType, _updateResult);
+                    if (_updateResult != UpdateResult::UPDATE_OK)
+                    {
+                        Log("Update aborted by server: %d\n", _updateResult);
+                        if(onUpdateEnd)
+                            onUpdateEnd(_updateType, _updateResult);
+                        return;
+                    }
+                }
+
                 Log("Update: %s\n", filename.c_str());
 #ifdef ESP8266
                 Update.runAsync(true);
 #endif
-                if (inputName == "filesystem")
+                if (_updateType == UpdateType::FILE_SYSTEM)
                 {
                     Log("updating filesystem");
 #ifdef ESP8266
@@ -183,6 +200,9 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
             {
                 if (Update.end(true))
                 { // true to set the size to the current progress
+                    _updateResult = UpdateResult::UPDATE_OK;
+                    if(onUpdateEnd)
+                        onUpdateEnd(_updateType, _updateResult);
                     Log("Update Success: \nRebooting...\n");
                 }
                 else
@@ -204,4 +224,8 @@ void ESPAsyncHTTPUpdateServer::_setUpdaterError()
     StreamString str;
     Update.printError(str);
     _updaterError = str.c_str();
+    
+    _updateResult = UpdateResult::UPDATE_ERROR;
+    if(onUpdateEnd)
+        onUpdateEnd(_updateType, _updateResult);
 }

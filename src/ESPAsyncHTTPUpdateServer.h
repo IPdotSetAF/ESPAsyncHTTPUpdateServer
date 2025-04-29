@@ -9,20 +9,20 @@ enum UpdateType
     FILE_SYSTEM
 };
 
-enum UpdateCode
+enum UpdateResult
 {
     UPDATE_OK,
     UPDATE_ABORT,
     UPDATE_ERROR,
 };
 
-typedef void (*ESPAsyncHTTPUpdateServer_event)(const UpdateType updateType, int &resultCode);
+typedef void (*ESPAsyncHTTPUpdateServer_event)(const UpdateType type, int &result);
 
 class ESPAsyncHTTPUpdateServer
 {
 public:
-    ESPAsyncHTTPUpdateServer_event onUpdateBegin;
-    ESPAsyncHTTPUpdateServer_event onUpdateEnd;
+    ESPAsyncHTTPUpdateServer_event onUpdateBegin = NULL;
+    ESPAsyncHTTPUpdateServer_event onUpdateEnd = NULL;
 
     ESPAsyncHTTPUpdateServer();
 
@@ -58,6 +58,8 @@ private:
     String _password;
     bool _authenticated;
     String _updaterError;
+    UpdateType _updateType;
+    int _updateResult;
 };
 
 #endif
