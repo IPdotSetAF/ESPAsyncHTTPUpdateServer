@@ -3,9 +3,27 @@
 
 #include <ESPAsyncWebServer.h>
 
+enum UpdateType
+{
+    FIRMWARE,
+    FILE_SYSTEM
+};
+
+enum UpdateCode
+{
+    UPDATE_OK,
+    UPDATE_ABORT,
+    UPDATE_ERROR,
+};
+
+typedef void (*ESPAsyncHTTPUpdateServer_event)(const UpdateType updateType, int &resultCode);
+
 class ESPAsyncHTTPUpdateServer
 {
 public:
+    ESPAsyncHTTPUpdateServer_event onUpdateBegin;
+    ESPAsyncHTTPUpdateServer_event onUpdateEnd;
+
     ESPAsyncHTTPUpdateServer();
 
     void setup(AsyncWebServer *server)
