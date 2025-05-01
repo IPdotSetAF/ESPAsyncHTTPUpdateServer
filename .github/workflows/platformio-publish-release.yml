@@ -30,7 +30,7 @@ jobs:
         run: pio account login -u ${{ secrets.PLATFORMIO_USERNAME }} -p ${{ secrets.PLATFORMIO_PASSWORD }}
       
       - name: Publish Package
-        run: pio pkg publish
+        run: pio pkg publish --no-interactive
         
       - name: Create Package
         run: pio pkg pack -o ${{ github.event.repository.name }}-${{ github.ref_name }}.tar.gz
