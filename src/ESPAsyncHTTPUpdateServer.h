@@ -3,9 +3,27 @@
 
 #include <ESPAsyncWebServer.h>
 
+enum UpdateType
+{
+    FIRMWARE,
+    FILE_SYSTEM
+};
+
+enum UpdateResult
+{
+    UPDATE_OK,
+    UPDATE_ABORT,
+    UPDATE_ERROR,
+};
+
+typedef void (*ESPAsyncHTTPUpdateServer_event)(const UpdateType type, int &result);
+
 class ESPAsyncHTTPUpdateServer
 {
 public:
+    ESPAsyncHTTPUpdateServer_event onUpdateBegin = NULL;
+    ESPAsyncHTTPUpdateServer_event onUpdateEnd = NULL;
+
     ESPAsyncHTTPUpdateServer();
 
     void setup(AsyncWebServer *server)
@@ -40,6 +58,8 @@ private:
     String _password;
     bool _authenticated;
     String _updaterError;
+    UpdateType _updateType;
+    int _updateResult;
 };
 
 #endif

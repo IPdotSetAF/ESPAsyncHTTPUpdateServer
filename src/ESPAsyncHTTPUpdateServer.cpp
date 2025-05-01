@@ -78,7 +78,11 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
             if(_username != emptyString && _password != emptyString)
                 if( !request->authenticate(_username.c_str(), _password.c_str()))
                     return request->requestAuthentication();
+#ifdef ESP32
+            AsyncWebServerResponse* response = request->beginResponse(200, "text/html", serverIndex, sizeof(serverIndex));
+#else
             AsyncWebServerResponse* response = request->beginResponse_P(200, "text/html", serverIndex, sizeof(serverIndex));
+#endif
             response->addHeader("Content-Encoding", "gzip");
             request->send(response); });
 
@@ -105,9 +109,9 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
         if (!_authenticated)
             return request->requestAuthentication();
 
-        if (Update.hasError())
+        if (_updateResult != UpdateResult::UPDATE_OK)
         {
-            AsyncWebServerResponse *response = request->beginResponse(200, F("text/html"), String(F("Update error: ")) + _updaterError);
+            AsyncWebServerResponse *response = request->beginResponse(200, F("text/html"), Update.hasError() ? String(F("Update error: ")) + _updaterError : "Update aborted by server.");
             response->addHeader("Access-Control-Allow-Headers", "*");
             response->addHeader("Access-Control-Allow-Origin", "*");
             response->addHeader("Connection", "close");
@@ -115,19 +119,27 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
         }
         else
         {
+#ifdef ESP32
+            request->send(200, PSTR("text/html"), successResponse);
+#else
             request->send_P(200, PSTR("text/html"), successResponse);
-            restartTimer.once_ms(1000, ESP.restart);
+#endif
+            Log("Rebooting...\n");
+            restartTimer.once_ms(1000,[]{ ESP.restart(); });
         } },
         [&](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final)
         {
             // handler for the file upload, gets the sketch bytes, and writes
             // them through the Update object
 
-            String inputName = request->getParam("name")->value();
+            _updateType = request->getParam("name")->value() == "filesystem"?
+                    UpdateType::FILE_SYSTEM :
+                    UpdateType::FIRMWARE;
 
             if (!index)
             {
                 _updaterError.clear();
+
 #ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
                 ESPASYNCHTTPUPDATESERVER_SerialOutput.setDebugOutput(true);
 #endif
@@ -137,13 +149,27 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
                     Log("Unauthenticated Update\n");
                     return;
                 }
+
+                if (onUpdateBegin)
+                {
+                    _updateResult = UpdateResult::UPDATE_OK;
+                    onUpdateBegin(_updateType, _updateResult);
+                    if (_updateResult != UpdateResult::UPDATE_OK)
+                    {
+                        Log("Update aborted by server: %d\n", _updateResult);
+                        if(onUpdateEnd)
+                            onUpdateEnd(_updateType, _updateResult);
+                        return;
+                    }
+                }
+
                 Log("Update: %s\n", filename.c_str());
 #ifdef ESP8266
                 Update.runAsync(true);
 #endif
-                if (inputName == "filesystem")
+                if (_updateType == UpdateType::FILE_SYSTEM)
                 {
-                    Log("updating filesystem");
+                    Log("updating filesystem\n");
 #ifdef ESP8266
                     int command = U_FS;
                     size_t fsSize = ((size_t)FS_end - (size_t)FS_start);
@@ -165,25 +191,28 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
                 }
                 else
                 {
-                    Log("updating flash");
+                    Log("updating flash\n");
                     uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
                     if (!Update.begin(maxSketchSpace, U_FLASH)) // start with max available size
                         _setUpdaterError();
                 }
             }
 
-            if (_authenticated && len && !_updaterError.length())
+            if (_authenticated && len && _updateResult == UpdateResult::UPDATE_OK)
             {
                 Log(".");
                 if (Update.write(data, len) != len)
                     _setUpdaterError();
             }
 
-            if (_authenticated && final && !_updaterError.length())
+            if (_authenticated && final && _updateResult == UpdateResult::UPDATE_OK)
             {
                 if (Update.end(true))
                 { // true to set the size to the current progress
-                    Log("Update Success: \nRebooting...\n");
+                    Log("Update Success.\n");
+                    _updateResult = UpdateResult::UPDATE_OK;
+                    if(onUpdateEnd)
+                        onUpdateEnd(_updateType, _updateResult);
                 }
                 else
                     _setUpdaterError();
@@ -204,4 +233,8 @@ void ESPAsyncHTTPUpdateServer::_setUpdaterError()
     StreamString str;
     Update.printError(str);
     _updaterError = str.c_str();
+    
+    _updateResult = UpdateResult::UPDATE_ERROR;
+    if(onUpdateEnd)
+        onUpdateEnd(_updateType, _updateResult);
 }

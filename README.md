@@ -37,6 +37,10 @@ It will provide a webpage for updating the firmware/filesystem of `ESP8266` or `
 - Update credentials customization (default: `No credentials`)
     - Username
     - Password
+- Update Events:
+    - onUpdateBegin
+    - onUpdateEnd
+- Force Aborting Update using events 
 - FileSystem Options:
     - SPIFFS
     - LittleFS
@@ -60,25 +64,44 @@ This Library is available in `Arduino Library Repository` and `PIO` and you can 
 ```
 2. Create an object from `ESPAsyncHTTPUpdateServer`
 ``` C++
-ESPAsyncHTTPUpdateServer _updateServer;
-AsyncWebServer _server(80);
+ESPAsyncHTTPUpdateServer updateServer;
+AsyncWebServer server(80);
 ```
 3. Setup the update server before starting the webServer
 ``` C++
-_updateServer.setup(&_server);
-_server.begin();
+updateServer.setup(&server);
+server.begin();
 ``` 
 #### Custom Route
 ``` C++
-_updateServer.setup(&_server, "/customroute");
+updateServer.setup(&server, "/customroute");
 ```
 #### Credentials
 ``` C++
-_updateServer.setup(&_server, "username", "password");
+updateServer.setup(&server, "username", "password");
 ```
 or
 ``` C++
-_updateServer.setup(&_server, "/customroute", "username", "password");
+updateServer.setup(&server, "/customroute", "username", "password");
+```
+#### Events
+```c++
+updateServer.onUpdateBegin = [](const UpdateType type, int &result)
+    {      
+        //...
+    };
+
+updateServer.onUpdateEnd = [](const UpdateType type, int &result)
+    {
+        //...
+    };
+```
+#### Aborting the update
+```c++
+updateServer.onUpdateBegin = [](const UpdateType type, int &result)
+    {      
+        result = UpdateResult::UPDATE_ABORT;
+    };
 ```
 
 ### Styling and Customizing OTA Page
