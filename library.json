@@ -1,6 +1,6 @@
 {
     "name": "ESPAsyncHTTPUpdateServer",
-    "version": "2.0.0",
+    "version": "3.0.0",
     "description": "Simple/Stylized HTTP Update Server for ESPAsyncWebServer(by me-no-dev). This library lets you to update Firmware/FileSystem of ESP32/ESP8266 OTA(Over The Air) from a web page.",
     "keywords": 
     [
@@ -12,7 +12,9 @@
       "UpdateServer",
       "FileSystem",
       "Firmware",
-      "Style"
+      "Style",
+      "Event",
+      "Callback"
     ],
     "repository":
     {

@@ -55,7 +55,7 @@ This Library is available in `Arduino Library Repository` and `PIO` and you can 
 |:---:|:---:|
 |<img width="500" src="previews/arduino.png" alt="Arduino library manager"/>|<img width="500" src="previews/pio.png" alt="pltformio library"/>|
 
-`ipdotsetaf/ESPAsyncHTTPUpdateServer@^2.0.0`
+`ipdotsetaf/ESPAsyncHTTPUpdateServer@^3.0.0`
 ### Setup
 1. Include the library after `ESPAsyncWebServer.h`
 ``` C++
