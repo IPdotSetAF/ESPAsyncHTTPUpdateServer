@@ -48,6 +48,18 @@ void setup() {
 
     //setup the updateServer with credentials
     updateServer.setup(&server, "admin", "admin");
+    //hook to update events if you need to
+    updateServer.onUpdateBegin = [](const UpdateType type, int &result)
+    {
+        //you can force abort the update like this if you need to:
+        //result = UpdateResult::UPDATE_ABORT;        
+        Serial.println("Update started : " + String(type));
+    };
+    updateServer.onUpdateEnd = [](const UpdateType type, int &result)
+    {
+        Serial.println("Update finished : " + String(type) + " result: " + String(result));
+    };
+
     server.begin();
 }
 
