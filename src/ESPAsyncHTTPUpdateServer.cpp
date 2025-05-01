@@ -105,9 +105,9 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
         if (!_authenticated)
             return request->requestAuthentication();
 
-        if (Update.hasError())
+        if (_updateResult != UpdateResult::UPDATE_OK)
         {
-            AsyncWebServerResponse *response = request->beginResponse(200, F("text/html"), String(F("Update error: ")) + _updaterError);
+            AsyncWebServerResponse *response = request->beginResponse(200, F("text/html"), Update.hasError() ? String(F("Update error: ")) + _updaterError : "Update aborted by server.");
             response->addHeader("Access-Control-Allow-Headers", "*");
             response->addHeader("Access-Control-Allow-Origin", "*");
             response->addHeader("Connection", "close");
@@ -116,6 +116,7 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
         else
         {
             request->send_P(200, PSTR("text/html"), successResponse);
+            Log("Rebooting...\n");
             restartTimer.once_ms(1000, ESP.restart);
         } },
         [&](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final)
@@ -160,7 +161,7 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
 #endif
                 if (_updateType == UpdateType::FILE_SYSTEM)
                 {
-                    Log("updating filesystem");
+                    Log("updating filesystem\n");
 #ifdef ESP8266
                     int command = U_FS;
                     size_t fsSize = ((size_t)FS_end - (size_t)FS_start);
@@ -182,28 +183,28 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
                 }
                 else
                 {
-                    Log("updating flash");
+                    Log("updating flash\n");
                     uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
                     if (!Update.begin(maxSketchSpace, U_FLASH)) // start with max available size
                         _setUpdaterError();
                 }
             }
 
-            if (_authenticated && len && !_updaterError.length())
+            if (_authenticated && len && _updateResult == UpdateResult::UPDATE_OK)
             {
                 Log(".");
                 if (Update.write(data, len) != len)
                     _setUpdaterError();
             }
 
-            if (_authenticated && final && !_updaterError.length())
+            if (_authenticated && final && _updateResult == UpdateResult::UPDATE_OK)
             {
                 if (Update.end(true))
                 { // true to set the size to the current progress
+                    Log("Update Success.\n");
                     _updateResult = UpdateResult::UPDATE_OK;
                     if(onUpdateEnd)
                         onUpdateEnd(_updateType, _updateResult);
-                    Log("Update Success: \nRebooting...\n");
                 }
                 else
                     _setUpdaterError();
