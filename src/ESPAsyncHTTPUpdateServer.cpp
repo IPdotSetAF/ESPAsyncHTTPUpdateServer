@@ -78,7 +78,11 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
             if(_username != emptyString && _password != emptyString)
                 if( !request->authenticate(_username.c_str(), _password.c_str()))
                     return request->requestAuthentication();
+#ifdef ESP32
+            AsyncWebServerResponse* response = request->beginResponse(200, "text/html", serverIndex, sizeof(serverIndex));
+#else
             AsyncWebServerResponse* response = request->beginResponse_P(200, "text/html", serverIndex, sizeof(serverIndex));
+#endif
             response->addHeader("Content-Encoding", "gzip");
             request->send(response); });
 
@@ -115,9 +119,13 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
         }
         else
         {
+#ifdef ESP32
+            request->send(200, PSTR("text/html"), successResponse);
+#else
             request->send_P(200, PSTR("text/html"), successResponse);
+#endif
             Log("Rebooting...\n");
-            restartTimer.once_ms(1000, ESP.restart);
+            restartTimer.once_ms(1000,[]{ ESP.restart(); });
         } },
         [&](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final)
         {
