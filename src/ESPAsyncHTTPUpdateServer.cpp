@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include "StreamString.h"
 #include "ESPAsyncHTTPUpdateServer.h"
-#include <Ticker.h>
 
 #ifdef ESP32
     #ifdef ESPASYNCHTTPUPDATESERVER_LITTLEFS
@@ -13,6 +12,7 @@
 #elif defined(ESP8266)
     #include <flash_hal.h>
     #include <FS.h>
+		#include <Ticker.h>
 #else
   #error "This library only supports boards with an ESP8266 or ESP32 processor."
 #endif
@@ -56,7 +56,9 @@
 static const char successResponse[] PROGMEM =
     R"(<meta content="15;URL=/"http-equiv=refresh>Update Success! Rebooting...)";
 
+#ifdef ESP8266
 Ticker restartTimer;
+#endif
 
 ESPAsyncHTTPUpdateServer::ESPAsyncHTTPUpdateServer()
 {
@@ -64,6 +66,8 @@ ESPAsyncHTTPUpdateServer::ESPAsyncHTTPUpdateServer()
     _username = emptyString;
     _password = emptyString;
     _authenticated = false;
+    _updateType = UpdateType::FIRMWARE;
+    _updateResult = UpdateResult::UPDATE_OK;
 }
 
 void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path, const String &username, const String &password)
@@ -75,7 +79,7 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
     // handler for the /update form page
     _server->on(path.c_str(), HTTP_GET, [&](AsyncWebServerRequest *request)
                 {
-            if(_username != emptyString && _password != emptyString)
+            if(!_username.isEmpty() && !_password.isEmpty())
                 if( !request->authenticate(_username.c_str(), _password.c_str()))
                     return request->requestAuthentication();
 #ifdef ESP32
@@ -94,7 +98,7 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
             response->addHeader("Access-Control-Allow-Origin", "*");
             request->send(response); 
             
-            _authenticated = (_username == emptyString || _password == emptyString || request -> authenticate(_username.c_str(), _password.c_str()));
+            _authenticated = (_username.isEmpty() || _password.isEmpty() || request -> authenticate(_username.c_str(), _password.c_str()));
             if (!_authenticated)
             {
                 Log("Unauthenticated Update\n");
@@ -119,31 +123,35 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
         }
         else
         {
+        	  Log("Rebooting...\n");
 #ifdef ESP32
             request->send(200, PSTR("text/html"), successResponse);
+            xTaskCreate([](void *){ vTaskDelay(pdMS_TO_TICKS(1000)); ESP.restart(); }, NULL, 2048, NULL, 2, NULL);
 #else
             request->send_P(200, PSTR("text/html"), successResponse);
+            restartTimer.once_ms(1000, []{ ESP.restart(); });
 #endif
-            Log("Rebooting...\n");
-            restartTimer.once_ms(1000,[]{ ESP.restart(); });
         } },
         [&](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final)
         {
             // handler for the file upload, gets the sketch bytes, and writes
             // them through the Update object
 
-            _updateType = request->getParam("name")->value() == "filesystem"?
-                    UpdateType::FILE_SYSTEM :
-                    UpdateType::FIRMWARE;
+        	  (void) filename; // filename not used: Compiler warning
 
             if (!index)
             {
+								_updateType = request->getParam("name")->value() == "filesystem"?
+												UpdateType::FILE_SYSTEM :
+												UpdateType::FIRMWARE;
+								_updateResult = UpdateResult::UPDATE_OK;
+
                 _updaterError.clear();
 
 #ifdef ESPASYNCHTTPUPDATESERVER_DEBUG
                 ESPASYNCHTTPUPDATESERVER_SerialOutput.setDebugOutput(true);
 #endif
-                _authenticated = (_username == emptyString || _password == emptyString || request->authenticate(_username.c_str(), _password.c_str()));
+                _authenticated = (_username.isEmpty() || _password.isEmpty() || request->authenticate(_username.c_str(), _password.c_str()));
                 if (!_authenticated)
                 {
                     Log("Unauthenticated Update\n");
@@ -152,7 +160,6 @@ void ESPAsyncHTTPUpdateServer::setup(AsyncWebServer *server, const String &path,
 
                 if (onUpdateBegin)
                 {
-                    _updateResult = UpdateResult::UPDATE_OK;
                     onUpdateBegin(_updateType, _updateResult);
                     if (_updateResult != UpdateResult::UPDATE_OK)
                     {
