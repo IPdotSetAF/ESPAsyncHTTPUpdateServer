@@ -1,0 +1,82 @@
+<!doctypehtml>
+    <html lang=en>
+    <meta charset=utf-8>
+    <meta content="width=device-width,initial-scale=1" name=viewport>
+    <form id="firmware-form" action="/update?name=firmware" enctype=multipart/form-data method=POST>
+        <div class="form-group">
+            <label for="firmware">Firmware:</label>
+            <input type="file" accept=".bin,.bin.gz" name="firmware" id="firmware">
+        </div>
+        <button type="submit">Update Firmware</button>
+    </form>
+    <form id="filesystem-form" action="/update?name=filesystem" enctype=multipart/form-data method=POST>
+        <div class="form-group">
+            <label for="filesystem">Filesystem:</label>
+            <input type="file" accept=".bin,.bin.gz" name="filesystem" id="filesystem">
+        </div>
+        <button type="submit">Update Filesystem</button>
+    </form>
+    <div id="progress-container" style="width:100%;background:#eee;">
+        <div id="progress-bar" style="width:0;height:10px;background:#4caf50;"></div>
+    </div>
+    <div id="update-result" style="margin-top:1rem;"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const filesystemForm = document.getElementById('filesystem-form');
+            const firmwareForm = document.getElementById('firmware-form');
+            const progressBar = document.getElementById('progress-bar');
+            const resultDiv = document.getElementById('update-result');
+
+            function submitForm(formElement) {
+                if (!formElement) {
+                    resultDiv.innerHTML = '<b>Error: form not found!</b>';
+                    return;
+                }
+
+                const data = new FormData(formElement);
+                const actionUrl = formElement.getAttribute('action');
+
+                if (!actionUrl) {
+                    resultDiv.innerHTML = '<b>Error: form action not found!</b>';
+                    return;
+                }
+
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', actionUrl, true);
+
+                xhr.upload.onprogress = function (e) {
+                    if (e.lengthComputable) {
+                        const percent = Math.round((e.loaded / e.total) * 100);
+                        progressBar.style.width = percent + '%';
+                    }
+                };
+
+                xhr.onload = function () {
+                    // The response will be HTML, not JSON!
+                    if (xhr.status === 200) {
+                        resultDiv.innerHTML = '<b>Upload completed!</b><br>' + xhr.responseText;
+                    } else {
+                        resultDiv.innerHTML = '<b>Error during upload!</b>';
+                    }
+                };
+
+                xhr.onerror = function () {
+                    resultDiv.innerHTML = '<b>Network error!</b>';
+                };
+
+                progressBar.style.width = '0%';
+                resultDiv.innerHTML = '';
+                xhr.send(data);
+            }
+
+            filesystemForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                submitForm(filesystemForm);
+            });
+
+            firmwareForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                submitForm(firmwareForm);
+            });
+        });
+    </script>
