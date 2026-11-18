@@ -56,6 +56,9 @@ This Library is available in `Arduino Library Repository` and `PIO` and you can 
 |<img width="500" src="previews/arduino.png" alt="Arduino library manager"/>|<img width="500" src="previews/pio.png" alt="pltformio library"/>|
 
 `ipdotsetaf/ESPAsyncHTTPUpdateServer@^3.0.0`
+
+In Arduino Library Manager, the web server dependency is [ESP Async WebServer](https://github.com/ESP32Async/ESPAsyncWebServer) by ESP32Async. The header is still `ESPAsyncWebServer.h`. If you use **Add .ZIP Library** for the update server, install the web server and its TCP dependency separately. Use ESP32Async's `Async TCP` for ESP32 or `ESP Async TCP` for ESP8266.
+
 ### Setup
 1. Include the library after `ESPAsyncWebServer.h`
 ``` C++
