@@ -60,7 +60,7 @@ This Library is available in `Arduino Library Repository` and `PIO` and you can 
 > [!IMPORTANT]
 > This library depends on ESP32Async's [ESP Async WebServer](https://github.com/ESP32Async/ESPAsyncWebServer) and [Async TCP](https://github.com/ESP32Async/AsyncTCP) for ESP32 or [ESP Async TCP](https://github.com/ESP32Async/ESPAsyncTCP) for ESP8266.
 >
-> If you want to install `ESP Async HTTP Update Server` you have to install all of its dependencies manually, including all of the above [library.properties](https://github.com/IPdotSetAF/ESPAsyncHTTPUpdateServer/blob/master/library.properties)/[library.json](https://github.com/IPdotSetAF/ESPAsyncHTTPUpdateServer/blob/master/library.json).   
+> If you want to install `ESP Async HTTP Update Server` MANUALLY (.zip file) you have to install all of its dependencies manually, including all of the above [library.properties](https://github.com/IPdotSetAF/ESPAsyncHTTPUpdateServer/blob/master/library.properties)/[library.json](https://github.com/IPdotSetAF/ESPAsyncHTTPUpdateServer/blob/master/library.json).   
 
 ### Setup
 1. Include the library after `ESPAsyncWebServer.h`
